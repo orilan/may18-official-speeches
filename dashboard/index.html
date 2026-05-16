@@ -225,7 +225,13 @@ button.apply-btn:hover { opacity: 0.85; }
       <div class="chart-wrap"><canvas id="ch1-paired"></canvas></div>
     </div>
     <div class="card">
-      <div class="section-title">시제 분포 (THEME 문장 × 정권)</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+        <div class="section-title" style="margin-bottom:0" id="t1-tense-label">시제 분포 (전체 THEME × 정권)</div>
+        <div style="display:flex;gap:5px">
+          <button class="toggle-btn active" id="t1-tense-all" onclick="setT1TenseMode('all')">전체 THEME</button>
+          <button class="toggle-btn" id="t1-tense-pol" onclick="setT1TenseMode('policy')">THEME-POLICY</button>
+        </div>
+      </div>
       <div class="chart-wrap"><canvas id="ch1-tense"></canvas></div>
     </div>
   </div>
@@ -297,7 +303,13 @@ button.apply-btn:hover { opacity: 0.85; }
       <div class="chart-wrap tall"><canvas id="ch3-periods"></canvas></div>
     </div>
     <div class="card">
-      <div class="section-title">정권별 시제 분포 (THEME 문장 %)</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+        <div class="section-title" style="margin-bottom:0" id="t3-tense-label">정권별 시제 분포 (전체 THEME %)</div>
+        <div style="display:flex;gap:5px">
+          <button class="toggle-btn active" id="t3-tense-all" onclick="setT3TenseMode('all')">전체 THEME</button>
+          <button class="toggle-btn" id="t3-tense-pol" onclick="setT3TenseMode('policy')">THEME-POLICY</button>
+        </div>
+      </div>
       <div class="chart-wrap tall"><canvas id="ch3-tense"></canvas></div>
     </div>
   </div>
@@ -343,7 +355,13 @@ button.apply-btn:hover { opacity: 0.85; }
   <div class="card" id="presB-card" style="min-height:260px"></div>
 </div>
 <div class="card">
-  <div class="card-title">시제 분포 비교 (THEME 문장 기준)</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+    <div class="card-title" style="margin-bottom:0" id="t4-tense-label">시제 분포 비교 (전체 THEME)</div>
+    <div style="display:flex;gap:5px">
+      <button class="toggle-btn active" id="t4-tense-all" onclick="setT4TenseMode('all')">전체 THEME</button>
+      <button class="toggle-btn" id="t4-tense-pol" onclick="setT4TenseMode('policy')">THEME-POLICY</button>
+    </div>
+  </div>
   <div class="chart-wrap short"><canvas id="c-tense-comp"></canvas></div>
 </div>
 </div>
@@ -447,6 +465,7 @@ const CORPUS =
   "cooccurrence_by_theme": [{"﻿primary_theme":"T1","primary_name":"사죄·반성","secondary_theme":"T4","secondary_name":"정의·진상규명","total":"5","total_pct":"31.2","lib_count":"5","lib_pct":"31.2","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T1","primary_name":"사죄·반성","secondary_theme":"T2","secondary_name":"용서","total":"3","total_pct":"18.8","lib_count":"3","lib_pct":"18.8","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T1","primary_name":"사죄·반성","secondary_theme":"T5","secondary_name":"치유·회복","total":"2","total_pct":"12.5","lib_count":"2","lib_pct":"12.5","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T1","primary_name":"사죄·반성","secondary_theme":"T3","secondary_name":"화해·통합","total":"2","total_pct":"12.5","lib_count":"2","lib_pct":"12.5","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T1","primary_name":"사죄·반성","secondary_theme":"T7","secondary_name":"역사의식","total":"1","total_pct":"6.2","lib_count":"1","lib_pct":"6.2","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T2","primary_name":"용서","secondary_theme":"T3","secondary_name":"화해·통합","total":"7","total_pct":"77.8","lib_count":"5","lib_pct":"71.4","con_count":"2","con_pct":"100.0"},{"﻿primary_theme":"T2","primary_name":"용서","secondary_theme":"T4","secondary_name":"정의·진상규명","total":"2","total_pct":"22.2","lib_count":"2","lib_pct":"28.6","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T2","primary_name":"용서","secondary_theme":"T6","secondary_name":"기억·계승","total":"1","total_pct":"11.1","lib_count":"0","lib_pct":"0.0","con_count":"1","con_pct":"50.0"},{"﻿primary_theme":"T2","primary_name":"용서","secondary_theme":"T1","secondary_name":"사죄·반성","total":"1","total_pct":"11.1","lib_count":"1","lib_pct":"14.3","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T2","primary_name":"용서","secondary_theme":"T5","secondary_name":"치유·회복","total":"1","total_pct":"11.1","lib_count":"1","lib_pct":"14.3","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T3","primary_name":"화해·통합","secondary_theme":"T6","secondary_name":"기억·계승","total":"20","total_pct":"24.4","lib_count":"10","lib_pct":"17.5","con_count":"10","con_pct":"40.0"},{"﻿primary_theme":"T3","primary_name":"화해·통합","secondary_theme":"T4","secondary_name":"정의·진상규명","total":"11","total_pct":"13.4","lib_count":"10","lib_pct":"17.5","con_count":"1","con_pct":"4.0"},{"﻿primary_theme":"T3","primary_name":"화해·통합","secondary_theme":"T2","secondary_name":"용서","total":"9","total_pct":"11.0","lib_count":"6","lib_pct":"10.5","con_count":"3","con_pct":"12.0"},{"﻿primary_theme":"T3","primary_name":"화해·통합","secondary_theme":"T5","secondary_name":"치유·회복","total":"8","total_pct":"9.8","lib_count":"7","lib_pct":"12.3","con_count":"1","con_pct":"4.0"},{"﻿primary_theme":"T3","primary_name":"화해·통합","secondary_theme":"T7","secondary_name":"역사의식","total":"6","total_pct":"7.3","lib_count":"4","lib_pct":"7.0","con_count":"2","con_pct":"8.0"},{"﻿primary_theme":"T3","primary_name":"화해·통합","secondary_theme":"T1","secondary_name":"사죄·반성","total":"1","total_pct":"1.2","lib_count":"1","lib_pct":"1.8","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T4","primary_name":"정의·진상규명","secondary_theme":"T6","secondary_name":"기억·계승","total":"7","total_pct":"10.4","lib_count":"7","lib_pct":"10.6","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T4","primary_name":"정의·진상규명","secondary_theme":"T7","secondary_name":"역사의식","total":"7","total_pct":"10.4","lib_count":"6","lib_pct":"9.1","con_count":"1","con_pct":"100.0"},{"﻿primary_theme":"T4","primary_name":"정의·진상규명","secondary_theme":"T5","secondary_name":"치유·회복","total":"2","total_pct":"3.0","lib_count":"2","lib_pct":"3.0","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T4","primary_name":"정의·진상규명","secondary_theme":"T1","secondary_name":"사죄·반성","total":"2","total_pct":"3.0","lib_count":"2","lib_pct":"3.0","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T4","primary_name":"정의·진상규명","secondary_theme":"T3","secondary_name":"화해·통합","total":"1","total_pct":"1.5","lib_count":"1","lib_pct":"1.5","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T5","primary_name":"치유·회복","secondary_theme":"T6","secondary_name":"기억·계승","total":"10","total_pct":"21.3","lib_count":"6","lib_pct":"19.4","con_count":"4","con_pct":"25.0"},{"﻿primary_theme":"T5","primary_name":"치유·회복","secondary_theme":"T4","secondary_name":"정의·진상규명","total":"5","total_pct":"10.6","lib_count":"5","lib_pct":"16.1","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T5","primary_name":"치유·회복","secondary_theme":"T7","secondary_name":"역사의식","total":"4","total_pct":"8.5","lib_count":"3","lib_pct":"9.7","con_count":"1","con_pct":"6.2"},{"﻿primary_theme":"T5","primary_name":"치유·회복","secondary_theme":"T3","secondary_name":"화해·통합","total":"2","total_pct":"4.3","lib_count":"2","lib_pct":"6.5","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T5","primary_name":"치유·회복","secondary_theme":"T1","secondary_name":"사죄·반성","total":"1","total_pct":"2.1","lib_count":"1","lib_pct":"3.2","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T6","primary_name":"기억·계승","secondary_theme":"T7","secondary_name":"역사의식","total":"68","total_pct":"26.1","lib_count":"56","lib_pct":"29.9","con_count":"12","con_pct":"16.2"},{"﻿primary_theme":"T6","primary_name":"기억·계승","secondary_theme":"T5","secondary_name":"치유·회복","total":"20","total_pct":"7.7","lib_count":"15","lib_pct":"8.0","con_count":"5","con_pct":"6.8"},{"﻿primary_theme":"T6","primary_name":"기억·계승","secondary_theme":"T3","secondary_name":"화해·통합","total":"20","total_pct":"7.7","lib_count":"12","lib_pct":"6.4","con_count":"8","con_pct":"10.8"},{"﻿primary_theme":"T6","primary_name":"기억·계승","secondary_theme":"T4","secondary_name":"정의·진상규명","total":"17","total_pct":"6.5","lib_count":"15","lib_pct":"8.0","con_count":"2","con_pct":"2.7"},{"﻿primary_theme":"T6","primary_name":"기억·계승","secondary_theme":"T1","secondary_name":"사죄·반성","total":"7","total_pct":"2.7","lib_count":"6","lib_pct":"3.2","con_count":"1","con_pct":"1.4"},{"﻿primary_theme":"T7","primary_name":"역사의식","secondary_theme":"T6","secondary_name":"기억·계승","total":"44","total_pct":"33.8","lib_count":"36","lib_pct":"31.3","con_count":"8","con_pct":"53.3"},{"﻿primary_theme":"T7","primary_name":"역사의식","secondary_theme":"T4","secondary_name":"정의·진상규명","total":"14","total_pct":"10.8","lib_count":"14","lib_pct":"12.2","con_count":"0","con_pct":"0.0"},{"﻿primary_theme":"T7","primary_name":"역사의식","secondary_theme":"T3","secondary_name":"화해·통합","total":"4","total_pct":"3.1","lib_count":"3","lib_pct":"2.6","con_count":"1","con_pct":"6.7"},{"﻿primary_theme":"T7","primary_name":"역사의식","secondary_theme":"T5","secondary_name":"치유·회복","total":"2","total_pct":"1.5","lib_count":"2","lib_pct":"1.7","con_count":"0","con_pct":"0.0"}],
   "president_radar": [{"president": "김영삼", "regime": "보수", "n": 14, "T1": 0.0, "T2": 14.3, "T3": 28.6, "T4": 0.0, "T5": 7.1, "T6": 28.6, "T7": 21.4}, {"president": "김대중", "regime": "진보", "n": 77, "T1": 0.0, "T2": 0.0, "T3": 13.0, "T4": 0.0, "T5": 6.5, "T6": 40.3, "T7": 40.3}, {"president": "노무현", "regime": "진보", "n": 111, "T1": 1.8, "T2": 0.9, "T3": 16.2, "T4": 10.8, "T5": 7.2, "T6": 38.7, "T7": 24.3}, {"president": "이명박", "regime": "보수", "n": 33, "T1": 0.0, "T2": 0.0, "T3": 21.2, "T4": 0.0, "T5": 3.0, "T6": 69.7, "T7": 6.1}, {"president": "박근혜", "regime": "보수", "n": 22, "T1": 0.0, "T2": 0.0, "T3": 18.2, "T4": 0.0, "T5": 13.6, "T6": 54.5, "T7": 13.6}, {"president": "문재인", "regime": "진보", "n": 291, "T1": 4.8, "T2": 2.1, "T3": 10.0, "T4": 18.6, "T5": 6.2, "T6": 38.8, "T7": 19.6}, {"president": "윤석열", "regime": "보수", "n": 64, "T1": 0.0, "T2": 0.0, "T3": 15.6, "T4": 1.6, "T5": 17.2, "T6": 54.7, "T7": 10.9}],
   "pres_tense": [{"president": "김영삼", "regime": "보수", "n": 14, "과거": 21.4, "현재": 21.4, "미래": 57.1}, {"president": "김대중", "regime": "진보", "n": 77, "과거": 24.7, "현재": 35.1, "미래": 40.3}, {"president": "노무현", "regime": "진보", "n": 111, "과거": 30.6, "현재": 32.4, "미래": 36.9}, {"president": "이명박", "regime": "보수", "n": 33, "과거": 21.2, "현재": 39.4, "미래": 39.4}, {"president": "박근혜", "regime": "보수", "n": 22, "과거": 18.2, "현재": 40.9, "미래": 40.9}, {"president": "문재인", "regime": "진보", "n": 291, "과거": 38.5, "현재": 41.9, "미래": 19.6}, {"president": "윤석열", "regime": "보수", "n": 64, "과거": 17.2, "현재": 59.4, "미래": 23.4}],
+  "pres_tense_policy": [{"president": "김영삼", "regime": "보수", "n": 0, "과거": 0, "현재": 0, "미래": 0}, {"president": "김대중", "regime": "진보", "n": 5, "과거": 0.0, "현재": 20.0, "미래": 80.0}, {"president": "노무현", "regime": "진보", "n": 10, "과거": 0.0, "현재": 20.0, "미래": 80.0}, {"president": "이명박", "regime": "보수", "n": 3, "과거": 0.0, "현재": 33.3, "미래": 66.7}, {"president": "박근혜", "regime": "보수", "n": 0, "과거": 0, "현재": 0, "미래": 0}, {"president": "문재인", "regime": "진보", "n": 41, "과거": 12.2, "현재": 39.0, "미래": 48.8}, {"president": "윤석열", "regime": "보수", "n": 7, "과거": 0.0, "현재": 14.3, "미래": 85.7}],
   "network": {"진보": {"nodes": [{"id": "T1", "pct": 3.3}, {"id": "T2", "pct": 1.5}, {"id": "T3", "pct": 11.9}, {"id": "T4", "pct": 13.8}, {"id": "T5", "pct": 6.5}, {"id": "T6", "pct": 39.0}, {"id": "T7", "pct": 24.0}], "edges": [{"source": "T1", "target": "T2", "cooc_pct": 0.84, "adj_pct": 0.63, "combined_pct": 1.47}, {"source": "T1", "target": "T3", "cooc_pct": 0.63, "adj_pct": 1.46, "combined_pct": 2.09}, {"source": "T1", "target": "T4", "cooc_pct": 1.46, "adj_pct": 1.25, "combined_pct": 2.71}, {"source": "T1", "target": "T5", "cooc_pct": 0.63, "adj_pct": 0.21, "combined_pct": 0.84}, {"source": "T1", "target": "T6", "cooc_pct": 1.25, "adj_pct": 1.04, "combined_pct": 2.29}, {"source": "T1", "target": "T7", "cooc_pct": 0.21, "adj_pct": 0.0, "combined_pct": 0.21}, {"source": "T2", "target": "T3", "cooc_pct": 2.3, "adj_pct": 0.63, "combined_pct": 2.93}, {"source": "T2", "target": "T4", "cooc_pct": 0.42, "adj_pct": 0.42, "combined_pct": 0.84}, {"source": "T2", "target": "T5", "cooc_pct": 0.21, "adj_pct": 1.04, "combined_pct": 1.25}, {"source": "T2", "target": "T7", "cooc_pct": 0.0, "adj_pct": 0.21, "combined_pct": 0.21}, {"source": "T3", "target": "T4", "cooc_pct": 2.3, "adj_pct": 1.25, "combined_pct": 3.55}, {"source": "T3", "target": "T5", "cooc_pct": 1.88, "adj_pct": 0.84, "combined_pct": 2.72}, {"source": "T3", "target": "T6", "cooc_pct": 4.59, "adj_pct": 6.89, "combined_pct": 11.48}, {"source": "T3", "target": "T7", "cooc_pct": 1.46, "adj_pct": 2.3, "combined_pct": 3.76}, {"source": "T4", "target": "T5", "cooc_pct": 1.46, "adj_pct": 2.09, "combined_pct": 3.55}, {"source": "T4", "target": "T6", "cooc_pct": 4.59, "adj_pct": 4.59, "combined_pct": 9.18}, {"source": "T4", "target": "T7", "cooc_pct": 4.18, "adj_pct": 3.55, "combined_pct": 7.73}, {"source": "T5", "target": "T6", "cooc_pct": 4.38, "adj_pct": 3.55, "combined_pct": 7.93}, {"source": "T5", "target": "T7", "cooc_pct": 1.04, "adj_pct": 1.25, "combined_pct": 2.29}, {"source": "T6", "target": "T7", "cooc_pct": 19.21, "adj_pct": 11.06, "combined_pct": 30.27}]}, "보수": {"nodes": [{"id": "T1", "pct": 0.0}, {"id": "T2", "pct": 1.5}, {"id": "T3", "pct": 18.8}, {"id": "T4", "pct": 0.8}, {"id": "T5", "pct": 12.0}, {"id": "T6", "pct": 55.6}, {"id": "T7", "pct": 11.3}], "edges": [{"source": "T1", "target": "T6", "cooc_pct": 0.75, "adj_pct": 0.0, "combined_pct": 0.75}, {"source": "T2", "target": "T3", "cooc_pct": 3.76, "adj_pct": 2.26, "combined_pct": 6.02}, {"source": "T2", "target": "T6", "cooc_pct": 0.75, "adj_pct": 0.0, "combined_pct": 0.75}, {"source": "T2", "target": "T7", "cooc_pct": 0.0, "adj_pct": 0.75, "combined_pct": 0.75}, {"source": "T3", "target": "T4", "cooc_pct": 0.75, "adj_pct": 0.0, "combined_pct": 0.75}, {"source": "T3", "target": "T5", "cooc_pct": 0.75, "adj_pct": 2.26, "combined_pct": 3.01}, {"source": "T3", "target": "T6", "cooc_pct": 13.53, "adj_pct": 21.05, "combined_pct": 34.58}, {"source": "T3", "target": "T7", "cooc_pct": 2.26, "adj_pct": 3.01, "combined_pct": 5.27}, {"source": "T4", "target": "T6", "cooc_pct": 1.5, "adj_pct": 1.5, "combined_pct": 3.0}, {"source": "T4", "target": "T7", "cooc_pct": 0.75, "adj_pct": 0.0, "combined_pct": 0.75}, {"source": "T5", "target": "T6", "cooc_pct": 6.77, "adj_pct": 12.03, "combined_pct": 18.8}, {"source": "T5", "target": "T7", "cooc_pct": 0.75, "adj_pct": 2.26, "combined_pct": 3.01}, {"source": "T6", "target": "T7", "cooc_pct": 15.04, "adj_pct": 9.77, "combined_pct": 24.81}]}}
 }
 ;
@@ -631,10 +650,14 @@ function renderTab1() {
     }
   });
 
-  // Tense chart — computed from filtered sentences (only THEME with tense set)
-  const libTenseSents = theme.filter(s => s.regime === '진보' && s.tense);
-  const conTenseSents = theme.filter(s => s.regime === '보수' && s.tense);
+  // Tense chart — filtered by t1TenseMode (all THEME vs THEME-POLICY)
+  const tensePred1 = s => s.tense && (t1TenseMode === 'all' || s.policy === true);
+  const libTenseSents = theme.filter(s => s.regime === '진보' && tensePred1(s));
+  const conTenseSents = theme.filter(s => s.regime === '보수' && tensePred1(s));
   const lTTotal = libTenseSents.length, cTTotal = conTenseSents.length;
+  const _t1LabelEl = document.getElementById('t1-tense-label');
+  if (_t1LabelEl) _t1LabelEl.textContent = t1TenseMode === 'all'
+    ? '시제 분포 (전체 THEME × 정권)' : '시제 분포 (THEME-POLICY × 정권)';
   makeChart('ch1-tense', {
     type:'bar',
     data: {
@@ -647,7 +670,7 @@ function renderTab1() {
     options: {
       maintainAspectRatio:false,
       plugins:{legend:{position:'top'}},
-      scales:{y:{max:60,ticks:{callback:v=>v+'%'}}}
+      scales:{y:{ticks:{callback:v=>v+'%'}}}
     }
   });
 }
@@ -752,6 +775,7 @@ function renderTab2() {
     return `<tr>${vals.map((v,i) => {
       if(i===0) return `<td style="font-family:'DM Mono',monospace;font-weight:600">${v}</td>`;
       if(i===1) return `<td><span style="color:${regColor};font-size:11px;font-weight:600">${v}</span></td>`;
+      if(i===2) return `<td style="font-size:12px;color:var(--text-muted)">${v}</td>`;
       if(i===3) return `<td style="font-family:'DM Mono',monospace">${v}</td>`;
       const pctVal = parseFloat(v);
       const alpha = Math.min(pctVal/60*0.8, 0.8);
@@ -844,10 +868,14 @@ function renderTab3() {
     }
   });
 
-  // Tense by regime — computed from sentences
-  const libT = libSents.filter(s=>s.tense), cTTotal = conSents.filter(s=>s.tense).length;
-  const conT = conSents.filter(s=>s.tense);
-  const lTTotal = libT.length;
+  // Tense by regime — filtered by t3TenseMode (all THEME vs THEME-POLICY)
+  const tensePred3 = s => s.tense && (t3TenseMode === 'all' || s.policy === true);
+  const libT = libSents.filter(tensePred3);
+  const conT = conSents.filter(tensePred3);
+  const lTTotal = libT.length, cTTotal = conT.length;
+  const _t3LabelEl = document.getElementById('t3-tense-label');
+  if (_t3LabelEl) _t3LabelEl.textContent = t3TenseMode === 'all'
+    ? '정권별 시제 분포 (전체 THEME %)' : '정권별 시제 분포 (THEME-POLICY %)';
   makeChart('ch3-tense', {
     type:'bar',
     data:{
@@ -857,7 +885,7 @@ function renderTab3() {
         {label:'보수 %', data: TENSES.map(tn => pct(conT.filter(s=>s.tense===tn).length, cTTotal)), backgroundColor:CON_COLOR+'bb'},
       ]
     },
-    options:{maintainAspectRatio:false, scales:{y:{max:60,ticks:{callback:v=>v+'%'}}}, plugins:{legend:{position:'top'}}}
+    options:{maintainAspectRatio:false, scales:{y:{ticks:{callback:v=>v+'%'}}}, plugins:{legend:{position:'top'}}}
   });
 }
 
@@ -996,6 +1024,32 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
+// Tense mode state (per tab)
+let t1TenseMode = 'all';
+let t3TenseMode = 'all';
+let t4TenseMode = 'all';
+function setT1TenseMode(m) {
+  t1TenseMode = m;
+  document.getElementById('t1-tense-all').classList.toggle('active', m==='all');
+  document.getElementById('t1-tense-pol').classList.toggle('active', m==='policy');
+  renderTab1();
+}
+function setT3TenseMode(m) {
+  t3TenseMode = m;
+  document.getElementById('t3-tense-all').classList.toggle('active', m==='all');
+  document.getElementById('t3-tense-pol').classList.toggle('active', m==='policy');
+  renderTab3();
+}
+function setT4TenseMode(m) {
+  t4TenseMode = m;
+  document.getElementById('t4-tense-all').classList.toggle('active', m==='all');
+  document.getElementById('t4-tense-pol').classList.toggle('active', m==='policy');
+  renderPresComp();
+}
+window.setT1TenseMode = setT1TenseMode;
+window.setT3TenseMode = setT3TenseMode;
+window.setT4TenseMode = setT4TenseMode;
+
 // ====================== TAB 4: 대통령별 비교 ======================
 function renderPresCard(cardId, data, color) {
   const card = document.getElementById(cardId);
@@ -1033,8 +1087,8 @@ function renderPresComp() {
   const tB = tenseArr.find(r => r.president === B);
   if (!dA || !dB) return;
 
-  const aColor = PRES_REGIME[A] === '진보' ? LIB_COLOR : CON_COLOR;
-  const bColor = PRES_REGIME[B] === '진보' ? LIB_COLOR : CON_COLOR;
+  const aColor = '#22d3ee'; // A 고정 (청록)
+  const bColor = '#fb923c'; // B 고정 (주황)
   const aDataArr = THEMES.map(t => dA[t]);
   const bDataArr = THEMES.map(t => dB[t]);
   const labels = THEMES.map(t => t + ' ' + THEME_NAMES[t]);
@@ -1108,16 +1162,22 @@ function renderPresComp() {
   renderPresCard('presA-card', dA, aColor);
   renderPresCard('presB-card', dB, bColor);
 
-  // Tense comparison
-  if (tA && tB) {
+  // Tense comparison — filtered by t4TenseMode
+  const tenseSource4 = t4TenseMode === 'all' ? CORPUS.pres_tense : CORPUS.pres_tense_policy;
+  const tA4 = tenseSource4.find(r => r.president === A);
+  const tB4 = tenseSource4.find(r => r.president === B);
+  const _t4LabelEl = document.getElementById('t4-tense-label');
+  if (_t4LabelEl) _t4LabelEl.textContent = t4TenseMode === 'all'
+    ? '시제 분포 비교 (전체 THEME)' : '시제 분포 비교 (THEME-POLICY)';
+  if (tA4 && tB4 && tA4.n > 0 && tB4.n > 0) {
     makeChart('c-tense-comp', {
       type: 'bar',
       data: {
         labels: ['과거', '현재', '미래'],
         datasets: [
-          { label: A, data: ['과거','현재','미래'].map(t => tA[t]),
+          { label: `${A} (n=${tA4.n})`, data: ['과거','현재','미래'].map(t => tA4[t]),
             backgroundColor: hexToRgba(aColor, 0.75) },
-          { label: B, data: ['과거','현재','미래'].map(t => tB[t]),
+          { label: `${B} (n=${tB4.n})`, data: ['과거','현재','미래'].map(t => tB4[t]),
             backgroundColor: hexToRgba(bColor, 0.75) }
         ]
       },
@@ -1130,6 +1190,12 @@ function renderPresComp() {
         }
       }
     });
+  } else if (document.getElementById('c-tense-comp')) {
+    const ctx = document.getElementById('c-tense-comp').getContext('2d');
+    ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+    ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='13px Noto Sans KR,sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText('선택한 대통령 중 THEME-POLICY 문장이 없습니다.', ctx.canvas.width/2, ctx.canvas.height/2);
   }
 }
 
