@@ -201,17 +201,17 @@ button.apply-btn:hover { opacity: 0.85; }
     <button class="apply-btn" id="f1-apply">적용</button>
   </div>
 
-  <div class="card mb-20">
-    <div class="section-title" id="t1-type-label">문장 유형별 분포</div>
-    <div class="chart-wrap short"><canvas id="ch1-type"></canvas></div>
-  </div>
-
   <div class="stats-row" id="t1-stats">
     <div class="card"><div class="card-title">전체 문장 수</div><div class="card-value" id="s1-total">—</div><div class="card-sub">코퍼스 규모</div></div>
     <div class="card"><div class="card-title">THEME 문장 수</div><div class="card-value" id="s1-theme">—</div><div class="card-sub">전체 문장 중 THEME</div></div>
     <div class="card"><div class="card-title">분석 연설 수</div><div class="card-value" id="s1-speech">—</div><div class="card-sub">필터 범위 내 연설</div></div>
     <div class="card"><div class="card-title">T4 비율</div><div class="card-value" id="s1-t4">—</div><div class="card-sub">정의·진상규명</div></div>
     <div class="card"><div class="card-title">T6 비율</div><div class="card-value" id="s1-t6">—</div><div class="card-sub">기억·계승 (최빈)</div></div>
+  </div>
+
+  <div class="card mb-20">
+    <div class="section-title" id="t1-type-label">문장 유형별 분포</div>
+    <div class="chart-wrap short"><canvas id="ch1-type"></canvas></div>
   </div>
 
   <div class="grid-2 mb-20">
@@ -288,7 +288,13 @@ button.apply-btn:hover { opacity: 0.85; }
 <!-- ===================== TAB 3: 정권별 비교 ===================== -->
 <div class="tab-content" id="tab-t3">
   <div class="card mb-20">
-    <div class="section-title">문장 유형별 분포 — 정권별 비교</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+      <div class="section-title" style="margin-bottom:0">문장 유형별 분포 — 정권별 비교</div>
+      <div style="display:flex;gap:5px">
+        <button class="toggle-btn active" id="t3-type-n" onclick="setT3TypeMode('count')">문장 수</button>
+        <button class="toggle-btn" id="t3-type-pct" onclick="setT3TypeMode('pct')">비율 %</button>
+      </div>
+    </div>
     <div class="chart-wrap short"><canvas id="ch3-type"></canvas></div>
   </div>
 
@@ -352,7 +358,13 @@ button.apply-btn:hover { opacity: 0.85; }
   </div>
 </div>
 <div class="card" style="margin-bottom:16px">
-  <div class="card-title" id="t4-type-label">문장 유형별 분포 — A vs B</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+    <div class="card-title" style="margin-bottom:0" id="t4-type-label">문장 유형별 분포 — A vs B</div>
+    <div style="display:flex;gap:5px">
+      <button class="toggle-btn active" id="t4-type-n" onclick="setT4TypeMode('count')">문장 수</button>
+      <button class="toggle-btn" id="t4-type-pct" onclick="setT4TypeMode('pct')">비율 %</button>
+    </div>
+  </div>
   <div class="chart-wrap short"><canvas id="c-type"></canvas></div>
 </div>
 <div class="grid-2" style="margin-bottom:16px">
@@ -843,29 +855,35 @@ function renderTab3() {
   const conSents = allTheme.filter(s => s.regime === '보수');
   const lTotal = libSents.length, cTotal = conSents.length;
 
-  // Type distribution chart (regime split)
+  // Type distribution chart (regime split) — count or pct toggle
   const libAll = CORPUS.sentences.filter(s => s.regime === '진보');
   const conAll = CORPUS.sentences.filter(s => s.regime === '보수');
+  const libTot = libAll.length, conTot = conAll.length;
+  const t3TypeVal = (arr, tot, tp) => {
+    const n = arr.filter(s => s.type === tp).length;
+    return t3TypeMode === 'count' ? n : +(n / tot * 100).toFixed(1);
+  };
   makeChart('ch3-type', {
     type: 'bar',
     data: {
       labels: SENT_TYPES,
       datasets: [
-        { label: '진보 (n=' + libAll.length + ')',
-          data: SENT_TYPES.map(tp => libAll.filter(s => s.type === tp).length),
+        { label: '진보 (n=' + libTot + ')',
+          data: SENT_TYPES.map(tp => t3TypeVal(libAll, libTot, tp)),
           backgroundColor: LIB_COLOR + '99', borderColor: LIB_COLOR, borderWidth: 1 },
-        { label: '보수 (n=' + conAll.length + ')',
-          data: SENT_TYPES.map(tp => conAll.filter(s => s.type === tp).length),
+        { label: '보수 (n=' + conTot + ')',
+          data: SENT_TYPES.map(tp => t3TypeVal(conAll, conTot, tp)),
           backgroundColor: CON_COLOR + '99', borderColor: CON_COLOR, borderWidth: 1 }
       ]
     },
     options: {
       maintainAspectRatio: false,
       plugins: { legend: { position: 'top', labels: { color: '#e2e8f0' } },
-        tooltip: { callbacks: { label: ctx => ' ' + ctx.raw.toLocaleString() + '문장' } } },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.raw + (t3TypeMode === 'pct' ? '%' : '문장') } } },
       scales: {
         x: { ticks: { color: '#e2e8f0', font: { size: 12 } }, grid: { color: 'rgba(255,255,255,0.08)' } },
-        y: { ticks: { color: '#8892b0', callback: v => v + '문' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+        y: { ticks: { color: '#8892b0', callback: v => v + (t3TypeMode === 'pct' ? '%' : '문') },
+             grid: { color: 'rgba(255,255,255,0.06)' } }
       }
     }
   });
@@ -969,7 +987,7 @@ function renderTab4() {
   const sel = document.getElementById('f4-year');
   sel.innerHTML = sorted.map(sp => {
     const isDaedok = sp.speaker !== sp.president;
-    const speakerNote = isDaedok ? ' (대독)' : '';
+    const speakerNote = isDaedok ? ' (대리)' : '';
     const label = sp.year + '년 — ' + sp.president + speakerNote + ' · ' + sp.regime;
     return '<option value="' + sp.spid + '">' + label + '</option>';
   }).join('');
@@ -985,10 +1003,10 @@ function showSpeech(spid) {
   const total = sents.length;
   const regClass = sp.regime === '진보' ? 'lib' : 'con';
 
-  // Speaker line: show president + 대독 note if different
+  // Speaker line: show president + 대리 note if different
   const isDaedok = sp.speaker && sp.president && sp.speaker !== sp.president;
   const speakerHtml = isDaedok
-    ? sp.president + ' 대통령 / <span style="color:var(--text-muted);font-size:12px">' + sp.speaker + ' 대독</span>'
+    ? sp.president + ' 대통령 / <span style="color:var(--text-muted);font-size:12px">' + sp.speaker + ' 대리</span>'
     : (sp.president || sp.speaker);
 
   // URL source line
@@ -1111,6 +1129,8 @@ document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', (
 let t1TenseMode = 'all';
 let t3TenseMode = 'all';
 let t4TenseMode = 'all';
+let t3TypeMode  = 'count';
+let t4TypeMode  = 'count';
 
 // ====================== INIT ======================
 renderTab1();
@@ -1133,10 +1153,22 @@ function setT3TenseMode(m) {
   document.getElementById('t3-tense-pol').classList.toggle('active', m==='policy');
   renderTab3();
 }
+function setT3TypeMode(m) {
+  t3TypeMode = m;
+  document.getElementById('t3-type-n').classList.toggle('active', m==='count');
+  document.getElementById('t3-type-pct').classList.toggle('active', m==='pct');
+  renderTab3();
+}
 function setT4TenseMode(m) {
   t4TenseMode = m;
   document.getElementById('t4-tense-all').classList.toggle('active', m==='all');
   document.getElementById('t4-tense-pol').classList.toggle('active', m==='policy');
+  renderPresComp();
+}
+function setT4TypeMode(m) {
+  t4TypeMode = m;
+  document.getElementById('t4-type-n').classList.toggle('active', m==='count');
+  document.getElementById('t4-type-pct').classList.toggle('active', m==='pct');
   renderPresComp();
 }
 window.setT1TenseMode = setT1TenseMode;
@@ -1183,9 +1215,14 @@ function renderPresComp() {
   const aColor = '#22d3ee'; // A 고정 (청록)
   const bColor = '#fb923c'; // B 고정 (주황)
 
-  // Type distribution chart (A vs B)
+  // Type distribution chart (A vs B) — count or pct toggle
   const aAllSents = CORPUS.sentences.filter(s => s.president === A);
   const bAllSents = CORPUS.sentences.filter(s => s.president === B);
+  const aTot = aAllSents.length, bTot = bAllSents.length;
+  const t4TypeVal = (arr, tot, tp) => {
+    const n = arr.filter(s => s.type === tp).length;
+    return t4TypeMode === 'count' ? n : +(n / tot * 100).toFixed(1);
+  };
   const typeLabel = document.getElementById('t4-type-label');
   if (typeLabel) typeLabel.textContent = '문장 유형별 분포 — ' + A + ' vs ' + B;
   makeChart('c-type', {
@@ -1193,21 +1230,22 @@ function renderPresComp() {
     data: {
       labels: SENT_TYPES,
       datasets: [
-        { label: A + ' (n=' + aAllSents.length + ')',
-          data: SENT_TYPES.map(tp => aAllSents.filter(s => s.type === tp).length),
+        { label: A + ' (n=' + aTot + ')',
+          data: SENT_TYPES.map(tp => t4TypeVal(aAllSents, aTot, tp)),
           backgroundColor: hexToRgba(aColor, 0.75), borderColor: aColor, borderWidth: 1 },
-        { label: B + ' (n=' + bAllSents.length + ')',
-          data: SENT_TYPES.map(tp => bAllSents.filter(s => s.type === tp).length),
+        { label: B + ' (n=' + bTot + ')',
+          data: SENT_TYPES.map(tp => t4TypeVal(bAllSents, bTot, tp)),
           backgroundColor: hexToRgba(bColor, 0.75), borderColor: bColor, borderWidth: 1 }
       ]
     },
     options: {
       maintainAspectRatio: false,
       plugins: { legend: { position: 'top', labels: { color: '#e2e8f0', font: { family: 'Noto Sans KR', size: 11 } } },
-        tooltip: { callbacks: { label: ctx => ' ' + ctx.raw.toLocaleString() + '문장' } } },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.raw + (t4TypeMode === 'pct' ? '%' : '문장') } } },
       scales: {
         x: { ticks: { color: '#e2e8f0', font: { size: 12 } }, grid: { color: 'rgba(255,255,255,0.08)' } },
-        y: { ticks: { color: '#8892b0', callback: v => v + '문' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+        y: { ticks: { color: '#8892b0', callback: v => v + (t4TypeMode === 'pct' ? '%' : '문') },
+             grid: { color: 'rgba(255,255,255,0.06)' } }
       }
     }
   });
