@@ -155,8 +155,10 @@ button.apply-btn:hover { opacity: 0.85; }
 .gen-slider-val { font-size:11px; font-family:'DM Mono',monospace; width:36px; text-align:right; color:var(--text); }
 input[type=range].gsl { flex:1; accent-color:var(--accent); cursor:pointer; }
 input[type=range].gsl:disabled { opacity:0.3; cursor:not-allowed; pointer-events:none; }
-.gen-analysis-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
-@media(max-width:700px){ .gen-analysis-grid2{ grid-template-columns:1fr; } }
+.gen-analysis-split { display:grid; grid-template-columns:260px 1fr; gap:14px; align-items:start; }
+.gen-analysis-left { display:flex; flex-direction:column; gap:10px; }
+#gen-flow-tip { position:fixed; background:rgba(15,23,42,0.97); border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:8px 12px; font-size:11px; color:#e2e8f0; max-width:260px; pointer-events:none; z-index:9999; display:none; line-height:1.6; box-shadow:0 4px 20px rgba(0,0,0,0.5); }
+@media(max-width:800px){ .gen-analysis-split{ grid-template-columns:1fr; } }
 .gen-analysis-inner { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09); border-radius:10px; padding:14px 16px; }
 .gen-flow-legend { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:8px; font-size:10px; color:var(--text-muted); }
 .gen-flow-swatch { display:inline-block; width:11px; height:11px; border-radius:2px; margin-right:3px; vertical-align:middle; }
@@ -628,30 +630,32 @@ input[type=range].gsl:disabled { opacity:0.3; cursor:not-allowed; pointer-events
   </div>
   <div class="card" id="gen-analysis-card" style="display:none;margin-top:20px">
     <div class="section-title" style="margin-bottom:18px">생성 연설문 담론 분석 <span id="gen-analysis-badge" style="font-size:11px;font-weight:400;opacity:.6"></span></div>
-    <div class="gen-analysis-grid2">
-      <div class="gen-analysis-inner">
-        <div class="gen-section-title" style="margin-bottom:10px">&#9312; 문장 유형 비율</div>
-        <canvas id="gen-chart-type" height="180"></canvas>
+    <div class="gen-analysis-split">
+      <!-- 좌측: ①②④⑤ -->
+      <div class="gen-analysis-left">
+        <div class="gen-analysis-inner">
+          <div class="gen-section-title" style="margin-bottom:8px">&#9312; 문장 유형 비율</div>
+          <canvas id="gen-chart-type" height="120"></canvas>
+        </div>
+        <div class="gen-analysis-inner">
+          <div class="gen-section-title" style="margin-bottom:8px">&#9313; 주제 분포 T1&#8211;T7</div>
+          <canvas id="gen-chart-theme" height="130"></canvas>
+        </div>
+        <div class="gen-analysis-inner">
+          <div class="gen-section-title" style="margin-bottom:8px">&#9315; 시제 성향 <span style="font-weight:400;opacity:.6;font-size:10px">(THEME 기준)</span></div>
+          <canvas id="gen-chart-tense" height="120"></canvas>
+        </div>
+        <div class="gen-analysis-inner">
+          <div class="gen-section-title" style="margin-bottom:6px">&#9316; 유사 연설 재매칭</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-bottom:10px">실제 생성된 담론 구조 기준</div>
+          <div id="gen-rematching"></div>
+        </div>
       </div>
-      <div class="gen-analysis-inner">
-        <div class="gen-section-title" style="margin-bottom:10px">&#9313; 주제 분포 T1&#8211;T7</div>
-        <canvas id="gen-chart-theme" height="180"></canvas>
-      </div>
-    </div>
-    <div class="gen-analysis-inner" style="margin-bottom:16px">
-      <div class="gen-section-title" style="margin-bottom:10px">&#9314; 담론 흐름 <span style="font-weight:400;opacity:.6;font-size:10px">(문장 순서 · 마우스 오버 시 내용 표시)</span></div>
-      <div class="gen-flow-legend" id="gen-flow-legend"></div>
-      <div id="gen-discourse-flow" style="display:flex;flex-wrap:wrap;gap:3px"></div>
-    </div>
-    <div class="gen-analysis-grid2">
-      <div class="gen-analysis-inner">
-        <div class="gen-section-title" style="margin-bottom:10px">&#9315; 시제 성향 <span style="font-weight:400;opacity:.6;font-size:10px">(THEME 기준)</span></div>
-        <canvas id="gen-chart-tense" height="180"></canvas>
-      </div>
-      <div class="gen-analysis-inner">
-        <div class="gen-section-title" style="margin-bottom:6px">&#9316; 유사 연설 재매칭</div>
-        <div style="font-size:10px;color:var(--text-muted);margin-bottom:10px">실제 생성된 담론 구조 기준</div>
-        <div id="gen-rematching"></div>
+      <!-- 우측: ③ 담론 흐름 -->
+      <div class="gen-analysis-inner" style="align-self:start">
+        <div class="gen-section-title" style="margin-bottom:10px">&#9314; 담론 흐름 <span style="font-weight:400;opacity:.6;font-size:10px">(마우스 오버 시 문장 내용 표시)</span></div>
+        <div class="gen-flow-legend" id="gen-flow-legend"></div>
+        <div id="gen-discourse-flow" style="display:flex;flex-wrap:wrap;gap:3px"></div>
       </div>
     </div>
   </div>
@@ -1688,13 +1692,36 @@ function renderGenAnalysis(sentences){
   const leg=document.getElementById('gen-flow-legend');
   const flw=document.getElementById('gen-discourse-flow');
   if(leg)leg.innerHTML=Object.keys(TYPE_C).map(function(k){return '<span><span class="gen-flow-swatch" style="background:'+TYPE_C[k]+'33;border:1.5px solid '+TYPE_C[k]+'"></span>'+k+'</span>';}).join('');
-  if(flw)flw.innerHTML=sentences.map(function(s,i){
-    var bg=TYPE_C[s.type]||'#64748b';
-    var bc=s.primary_theme?TH_C[s.primary_theme]:'transparent';
-    var lbl=s.primary_theme?'<span style="font-size:7px;color:'+TH_C[s.primary_theme]+';font-weight:700;line-height:1">'+s.primary_theme+'</span>':'';
-    var ti=(i+1)+'. ['+s.type+(s.primary_theme?'/'+s.primary_theme:'')+(s.tense?'/'+s.tense:'')+'] '+(s.text||'').slice(0,90);
-    return '<div title="'+ti.replace(/"/g,'&quot;')+'" style="width:22px;height:22px;background:'+bg+'22;border:2px solid '+bc+';border-radius:3px;display:flex;align-items:center;justify-content:center;cursor:default;flex-shrink:0">'+lbl+'</div>';
-  }).join('');
+  // 커스텀 툴팁 요소 생성
+  var ttp=document.getElementById('gen-flow-tip');
+  if(!ttp){ttp=document.createElement('div');ttp.id='gen-flow-tip';document.body.appendChild(ttp);}
+  if(flw){
+    flw.innerHTML=sentences.map(function(s,i){
+      var bg=TYPE_C[s.type]||'#64748b';
+      var bc=s.primary_theme?TH_C[s.primary_theme]:'transparent';
+      var lbl=s.primary_theme?'<span style="font-size:7px;color:'+TH_C[s.primary_theme]+';font-weight:700;line-height:1">'+s.primary_theme+'</span>':'';
+      var tipData=JSON.stringify({n:i+1,type:s.type,pt:s.primary_theme||'',st:s.secondary_theme||'',tense:s.tense||'',text:s.text||''});
+      return '<div data-tip="'+tipData.replace(/"/g,'&quot;')+'" style="width:22px;height:22px;background:'+bg+'22;border:2px solid '+bc+';border-radius:3px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">'+lbl+'</div>';
+    }).join('');
+    flw.addEventListener('mouseover',function(e){
+      var d=e.target.closest('[data-tip]');
+      if(!d)return;
+      try{
+        var info=JSON.parse(d.getAttribute('data-tip').replace(/&quot;/g,'"'));
+        var meta='#'+info.n+' · '+info.type+(info.pt?' · <span style="color:'+TH_C[info.pt]+'">'+info.pt+'</span>':'')+(info.tense?' · '+info.tense:'')+(info.st?' · 2차:'+info.st:'');
+        ttp.innerHTML='<div style="color:#94a3b8;font-size:10px;margin-bottom:5px">'+meta+'</div><div>'+info.text+'</div>';
+        var r=d.getBoundingClientRect();
+        var tx=Math.min(r.left+window.scrollX,window.innerWidth-270);
+        var ty=r.bottom+window.scrollY+6;
+        ttp.style.left=Math.max(0,tx)+'px';
+        ttp.style.top=ty+'px';
+        ttp.style.display='block';
+      }catch(err){}
+    });
+    flw.addEventListener('mouseout',function(e){
+      if(!flw.contains(e.relatedTarget))ttp.style.display='none';
+    });
+  }
 
   if(genTenseChart)genTenseChart.destroy();
   const c4=document.getElementById('gen-chart-tense');
