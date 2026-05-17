@@ -147,6 +147,19 @@ button.apply-btn:hover { opacity: 0.85; }
 .pres-bar-label { display:flex; justify-content:space-between; margin-bottom:3px; }
 .pres-bar-track { height:7px; background:var(--surface2); border-radius:4px; }
 .pres-bar-fill  { height:100%; border-radius:4px; transition:width 0.35s; }
+
+/* ── 연설문 생성기 탭 ── */
+.gen-section-title { font-size:10px; font-weight:700; color:var(--accent); letter-spacing:0.6px; text-transform:uppercase; margin-bottom:8px; }
+.gen-slider-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+.gen-slider-label { font-size:11px; color:var(--text-muted); width:120px; flex-shrink:0; line-height:1.3; }
+.gen-slider-val { font-size:11px; font-family:'DM Mono',monospace; width:36px; text-align:right; color:var(--text); }
+input[type=range].gsl { flex:1; accent-color:var(--accent); cursor:pointer; }
+.gen-match-item { padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+.gen-match-item:last-child { border-bottom:none; }
+.gen-match-rank { font-size:10px; font-family:'DM Mono',monospace; color:var(--text-muted); margin-right:4px; }
+.gen-btn { background:var(--accent); color:#0f1117; border:none; border-radius:8px; padding:13px 48px; font-size:15px; font-weight:700; font-family:'Noto Sans KR',sans-serif; cursor:pointer; transition:opacity 0.15s; }
+.gen-btn:hover { opacity:0.85; }
+.gen-btn:disabled { opacity:0.4; cursor:not-allowed; }
 </style>
 </head>
 <body>
@@ -164,6 +177,7 @@ button.apply-btn:hover { opacity: 0.85; }
   <button class="tab-btn" data-tab="t5">담론 네트워크</button>
   <button class="tab-btn" data-tab="t6">연설문 전문</button>
   <button class="tab-btn" data-tab="t7">예문 탐색기</button>
+  <button class="tab-btn" data-tab="t8">연설문 생성기</button>
 </div>
 
 <!-- ===================== TAB 1: 주제 분포 ===================== -->
@@ -473,6 +487,123 @@ button.apply-btn:hover { opacity: 0.85; }
   </div>
   <div id="t5-count" style="color:var(--text-muted);font-size:12px;margin-bottom:12px;"></div>
   <div class="sent-cards" id="sent-cards"></div>
+</div>
+
+<!-- ===================== TAB 8: 연설문 생성기 ===================== -->
+<div class="tab-content" id="tab-t8">
+
+  <div class="card mb-20" style="padding:14px 18px">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:12px;font-weight:600;color:var(--text-muted);white-space:nowrap">OpenAI API 키</span>
+      <input type="password" id="gen-api-key" placeholder="sk-..."
+             style="flex:1;min-width:220px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:7px 12px;color:var(--text);font-size:13px;font-family:'DM Mono',monospace;outline:none">
+      <span id="gen-key-status" style="font-size:11px;color:var(--text-muted)">미입력</span>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
+    <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-right:4px">프리셋</span>
+    <button class="toggle-btn" id="gpreset-lib" onclick="applyGenPreset('liberal')">진보형</button>
+    <button class="toggle-btn" id="gpreset-con" onclick="applyGenPreset('conservative')">보수형</button>
+    <button class="toggle-btn" id="gpreset-j"   onclick="applyGenPreset('justice')">이행기정의 강조</button>
+    <button class="toggle-btn" id="gpreset-def" onclick="applyGenPreset('default')">전체 평균</button>
+  </div>
+
+  <div class="grid-2 mb-20">
+    <div class="card">
+      <div style="margin-bottom:16px">
+        <div class="gen-section-title">문장 구성 비율</div>
+        <div class="gen-slider-row"><span class="gen-slider-label">THEME</span>
+          <input type="range" class="gsl" id="sl-gtype-theme" min="0" max="100" value="52" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gtype-theme">52%</span></div>
+        <div class="gen-slider-row"><span class="gen-slider-label">CONTEXT</span>
+          <input type="range" class="gsl" id="sl-gtype-context" min="0" max="100" value="26" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gtype-context">26%</span></div>
+        <div class="gen-slider-row"><span class="gen-slider-label">RITUAL</span>
+          <input type="range" class="gsl" id="sl-gtype-ritual" min="0" max="100" value="15" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gtype-ritual">15%</span></div>
+        <div class="gen-slider-row"><span class="gen-slider-label">POLICY</span>
+          <input type="range" class="gsl" id="sl-gtype-policy" min="0" max="100" value="7" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gtype-policy">7%</span></div>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <div class="gen-section-title">T1–T7 주제 강조 <span style="font-weight:400;opacity:.6">(상대 비중)</span></div>
+        <div class="gen-slider-row"><span class="gen-slider-label" style="color:#f87171">T1 사죄·반성</span>
+          <input type="range" class="gsl" id="sl-gt1" min="0" max="50" value="14" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gt1">14</span></div>
+        <div class="gen-slider-row"><span class="gen-slider-label" style="color:#fb923c">T2 명예·배상</span>
+          <input type="range" class="gsl" id="sl-gt2" min="0" max="50" value="8" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gt2">8</span></div>
+        <div class="gen-slider-row"><span class="gen-slider-label" style="color:#facc15">T3 화해·통합</span>
+          <input type="range" class="gsl" id="sl-gt3" min="0" max="50" value="18" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gt3">18</span></div>
+        <div class="gen-slider-row"><span class="gen-slider-label" style="color:#4ade80">T4 정의·진상규명</span>
+          <input type="range" class="gsl" id="sl-gt4" min="0" max="50" value="22" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gt4">22</span></div>
+        <div class="gen-slider-row"><span class="gen-slider-label" style="color:#60a5fa">T5 민주주의 가치</span>
+          <input type="range" class="gsl" id="sl-gt5" min="0" max="50" value="12" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gt5">12</span></div>
+        <div class="gen-slider-row"><span class="gen-slider-label" style="color:#818cf8">T6 기억·계승</span>
+          <input type="range" class="gsl" id="sl-gt6" min="0" max="60" value="28" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gt6">28</span></div>
+        <div class="gen-slider-row"><span class="gen-slider-label" style="color:#e879f9">T7 미래지향</span>
+          <input type="range" class="gsl" id="sl-gt7" min="0" max="50" value="8" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gt7">8</span></div>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <div class="gen-section-title">시제 구성</div>
+        <div class="gen-slider-row"><span class="gen-slider-label">과거</span>
+          <input type="range" class="gsl" id="sl-gpast" min="0" max="80" value="35" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gpast">35%</span></div>
+        <div class="gen-slider-row"><span class="gen-slider-label">미래</span>
+          <input type="range" class="gsl" id="sl-gfuture" min="0" max="60" value="20" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gfuture">20%</span></div>
+        <div class="gen-slider-row"><span class="gen-slider-label" style="opacity:.5">현재 (자동)</span>
+          <div style="flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px"></div>
+          <span class="gen-slider-val" id="sv-gpresent" style="color:var(--text-muted)">45%</span></div>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <div class="gen-section-title">정책 지향성 <span style="font-weight:400;opacity:.6">(THEME 중 POLICY 비중)</span></div>
+        <div class="gen-slider-row"><span class="gen-slider-label">비중</span>
+          <input type="range" class="gsl" id="sl-gpolicytheme" min="0" max="50" value="11" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gpolicytheme">11%</span></div>
+      </div>
+
+      <div>
+        <div class="gen-section-title">연설 규모</div>
+        <div class="gen-slider-row"><span class="gen-slider-label">목표 문장 수</span>
+          <input type="range" class="gsl" id="sl-gcount" min="15" max="60" value="30" oninput="onGenSlider()">
+          <span class="gen-slider-val" id="sv-gcount">30문</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin-bottom:4px">유사 연설 매칭</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px">슬라이더 조정 시 자동 갱신 · 상위 3개를 Few-shot 예시로 사용</div>
+      <div id="gen-matches"><div style="color:var(--text-muted);font-size:13px;text-align:center;padding:40px 0">조건을 설정하면<br>유사 연설이 표시됩니다</div></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-bottom:24px">
+    <button class="gen-btn" id="gen-btn" onclick="generateSpeech()">기념사 생성</button>
+    <div id="gen-status" style="margin-top:10px;font-size:12px;color:var(--text-muted);min-height:18px"></div>
+  </div>
+
+  <div class="card" id="gen-result-card" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div class="section-title" style="margin-bottom:0">생성 결과</div>
+      <button onclick="copyGenResult()"
+              style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:6px;padding:5px 14px;color:var(--text);font-size:12px;cursor:pointer">
+        복사
+      </button>
+    </div>
+    <div id="gen-result-text"
+         style="white-space:pre-wrap;line-height:1.95;font-size:14px;font-family:'Noto Serif KR',serif;color:var(--text)"></div>
+  </div>
+
 </div>
 
 <script>
@@ -1112,6 +1243,235 @@ function renderTab5() {
 
 document.getElementById('f5-shuffle').addEventListener('click', renderTab5);
 
+
+// ====================== TAB 8: 연설문 생성기 ======================
+let genInitialized = false;
+let genSpeechProfiles = [];
+const GEN_PRESETS = {};
+let genDebounce = null;
+
+function computeSpeechProfileGen(spid) {
+  const sents = CORPUS.sentences.filter(s => s.spid === spid);
+  const total = sents.length;
+  if (!total) return null;
+  const theme = sents.filter(s => s.type === 'THEME');
+  const themeTotal = theme.length || 1;
+  const tenseSents = sents.filter(s => s.tense && s.tense !== '');
+  const tenseTotal = tenseSents.length || 1;
+  return {
+    spid, total,
+    theme_pct:   pct(theme.length, total),
+    context_pct: pct(sents.filter(s=>s.type==='CONTEXT').length, total),
+    ritual_pct:  pct(sents.filter(s=>s.type==='RITUAL').length, total),
+    policy_pct:  pct(sents.filter(s=>s.type==='POLICY').length, total),
+    T1: pct(theme.filter(s=>s.pt==='T1').length, themeTotal),
+    T2: pct(theme.filter(s=>s.pt==='T2').length, themeTotal),
+    T3: pct(theme.filter(s=>s.pt==='T3').length, themeTotal),
+    T4: pct(theme.filter(s=>s.pt==='T4').length, themeTotal),
+    T5: pct(theme.filter(s=>s.pt==='T5').length, themeTotal),
+    T6: pct(theme.filter(s=>s.pt==='T6').length, themeTotal),
+    T7: pct(theme.filter(s=>s.pt==='T7').length, themeTotal),
+    past_pct:         pct(tenseSents.filter(s=>s.tense==='과거').length, tenseTotal),
+    future_pct:       pct(tenseSents.filter(s=>s.tense==='미래').length, tenseTotal),
+    policy_theme_pct: pct(theme.filter(s=>s.policy===true).length, themeTotal)
+  };
+}
+
+function computeGroupProfileGen(filter) {
+  const sents = filter ? CORPUS.sentences.filter(filter) : CORPUS.sentences;
+  const total = sents.length || 1;
+  const theme = sents.filter(s => s.type === 'THEME');
+  const themeTotal = theme.length || 1;
+  const tenseSents = sents.filter(s => s.tense && s.tense !== '');
+  const tenseTotal = tenseSents.length || 1;
+  const spids = [...new Set(sents.map(s=>s.spid))];
+  return {
+    theme_pct:   pct(theme.length, total),
+    context_pct: pct(sents.filter(s=>s.type==='CONTEXT').length, total),
+    ritual_pct:  pct(sents.filter(s=>s.type==='RITUAL').length, total),
+    policy_pct:  pct(sents.filter(s=>s.type==='POLICY').length, total),
+    T1: pct(theme.filter(s=>s.pt==='T1').length, themeTotal),
+    T2: pct(theme.filter(s=>s.pt==='T2').length, themeTotal),
+    T3: pct(theme.filter(s=>s.pt==='T3').length, themeTotal),
+    T4: pct(theme.filter(s=>s.pt==='T4').length, themeTotal),
+    T5: pct(theme.filter(s=>s.pt==='T5').length, themeTotal),
+    T6: pct(theme.filter(s=>s.pt==='T6').length, themeTotal),
+    T7: pct(theme.filter(s=>s.pt==='T7').length, themeTotal),
+    past_pct:         pct(tenseSents.filter(s=>s.tense==='과거').length, tenseTotal),
+    future_pct:       pct(tenseSents.filter(s=>s.tense==='미래').length, tenseTotal),
+    policy_theme_pct: pct(theme.filter(s=>s.policy===true).length, themeTotal),
+    sentence_count:   Math.round(total / Math.max(1, spids.length))
+  };
+}
+
+function initGenTab() {
+  if (genInitialized) { updateGenMatches(); return; }
+  genInitialized = true;
+  genSpeechProfiles = CORPUS.speeches
+    .filter(sp => sp.text && sp.text.trim().length > 0)
+    .map(sp => ({
+      ...computeSpeechProfileGen(sp.spid),
+      year: sp.year, president: sp.president, regime: sp.regime, text: sp.text
+    })).filter(p => p && p.total > 0);
+  GEN_PRESETS.liberal      = computeGroupProfileGen(s => s.regime === '진보');
+  GEN_PRESETS.conservative = computeGroupProfileGen(s => s.regime === '보수');
+  GEN_PRESETS.default      = computeGroupProfileGen(null);
+  const top4set = new Set([...genSpeechProfiles].sort((a,b)=>b.T4-a.T4).slice(0,5).map(p=>p.spid));
+  GEN_PRESETS.justice = computeGroupProfileGen(s => top4set.has(s.spid));
+  GEN_PRESETS.justice.T4 = Math.min(48, GEN_PRESETS.justice.T4 + 8);
+  applyGenPreset('default');
+}
+
+function getCurrentGenSliders() {
+  const g = id => +document.getElementById(id).value;
+  const past = g('sl-gpast'), future = g('sl-gfuture');
+  return {
+    theme_pct:g('sl-gtype-theme'), context_pct:g('sl-gtype-context'),
+    ritual_pct:g('sl-gtype-ritual'), policy_pct:g('sl-gtype-policy'),
+    T1:g('sl-gt1'),T2:g('sl-gt2'),T3:g('sl-gt3'),T4:g('sl-gt4'),
+    T5:g('sl-gt5'),T6:g('sl-gt6'),T7:g('sl-gt7'),
+    past_pct:past, future_pct:future,
+    present_pct:Math.max(0,100-past-future),
+    policy_theme_pct:g('sl-gpolicytheme'), sentence_count:g('sl-gcount')
+  };
+}
+
+function setGenSlider(id, val) {
+  const el = document.getElementById('sl-'+id);
+  const sv = document.getElementById('sv-'+id);
+  if (!el || !sv) return;
+  el.value = Math.min(+el.max, Math.max(+el.min, Math.round(+val||0)));
+  sv.textContent = (id==='gcount') ? el.value+'문' : el.value+'%';
+}
+
+function applyGenPreset(name) {
+  const p = GEN_PRESETS[name];
+  if (!p) return;
+  setGenSlider('gtype-theme',p.theme_pct); setGenSlider('gtype-context',p.context_pct);
+  setGenSlider('gtype-ritual',p.ritual_pct); setGenSlider('gtype-policy',p.policy_pct);
+  ['T1','T2','T3','T4','T5','T6','T7'].forEach(t=>setGenSlider('g'+t.toLowerCase(),p[t]));
+  setGenSlider('gpast',p.past_pct); setGenSlider('gfuture',p.future_pct);
+  setGenSlider('gpolicytheme',p.policy_theme_pct);
+  if (p.sentence_count) setGenSlider('gcount',p.sentence_count);
+  updatePresentDisplay();
+  const nameMap={liberal:'lib',conservative:'con',justice:'j',default:'def'};
+  ['lib','con','j','def'].forEach(k=>{
+    const el=document.getElementById('gpreset-'+k);
+    if(el) el.classList.toggle('active', nameMap[name]===k);
+  });
+  updateGenMatches();
+}
+
+function updatePresentDisplay() {
+  const p=+document.getElementById('sl-gpast').value;
+  const f=+document.getElementById('sl-gfuture').value;
+  const sv=document.getElementById('sv-gpresent');
+  if(sv) sv.textContent=Math.max(0,100-p-f)+'%';
+}
+
+function onGenSlider() {
+  ['gtype-theme','gtype-context','gtype-ritual','gtype-policy',
+   'gt1','gt2','gt3','gt4','gt5','gt6','gt7','gpast','gfuture','gpolicytheme'].forEach(id=>{
+    const e=document.getElementById('sl-'+id), s=document.getElementById('sv-'+id);
+    if(e&&s) s.textContent=e.value+'%';
+  });
+  const ce=document.getElementById('sl-gcount'),cs=document.getElementById('sv-gcount');
+  if(ce&&cs) cs.textContent=ce.value+'문';
+  updatePresentDisplay();
+  ['gpreset-lib','gpreset-con','gpreset-j','gpreset-def'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.classList.remove('active');
+  });
+  clearTimeout(genDebounce);
+  genDebounce=setTimeout(updateGenMatches,280);
+}
+
+function genProfileDistance(p,s) {
+  const td=(Math.abs(p.theme_pct-s.theme_pct)+Math.abs(p.context_pct-s.context_pct)+
+            Math.abs(p.ritual_pct-s.ritual_pct)+Math.abs(p.policy_pct-s.policy_pct))/4;
+  const thd=['T1','T2','T3','T4','T5','T6','T7'].reduce((a,t)=>a+Math.abs((p[t]||0)-(s[t]||0)),0)/7;
+  const tnd=(Math.abs(p.past_pct-s.past_pct)+Math.abs(p.future_pct-s.future_pct))/2;
+  return 0.25*td+0.45*thd+0.20*tnd+0.10*Math.abs(p.policy_theme_pct-s.policy_theme_pct);
+}
+
+function updateGenMatches() {
+  const s=getCurrentGenSliders();
+  const top3=[...genSpeechProfiles].map(p=>({...p,dist:genProfileDistance(p,s)}))
+    .sort((a,b)=>a.dist-b.dist).slice(0,3);
+  const box=document.getElementById('gen-matches');
+  if(!box) return;
+  if(!top3.length){box.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:30px 0">데이터 없음</div>';return;}
+  box.innerHTML=top3.map((m,i)=>{
+    const rc=m.regime==='진보'?'lib':'con';
+    const pr=Math.max(0,100-m.past_pct-m.future_pct);
+    const tops=['T1','T2','T3','T4','T5','T6','T7'].map(t=>({t,v:m[t]||0}))
+      .sort((a,b)=>b.v-a.v).slice(0,2).map(x=>x.t+' '+THEME_NAMES[x.t]+' '+x.v+'%').join(' · ');
+    return '<div class="gen-match-item">'+
+      '<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">'+
+        '<span class="gen-match-rank">#'+(i+1)+'</span>'+
+        '<strong style="font-size:13px">'+m.year+'년 '+m.president+'</strong>'+
+        '<span class="badge-'+rc+'" style="font-size:10px">'+m.regime+'</span>'+
+        '<span style="color:var(--text-muted);font-size:10px;margin-left:auto;font-family:\'DM Mono\',monospace">'+m.dist.toFixed(1)+'</span>'+
+      '</div>'+
+      '<div style="font-size:11px;color:var(--text-muted);line-height:1.6">'+
+        'THEME '+m.theme_pct+'% · CONTEXT '+m.context_pct+'% · RITUAL '+m.ritual_pct+'%<br>'+
+        tops+'<br>과거 '+m.past_pct+'% · 현재 '+pr+'% · 미래 '+m.future_pct+'%'+
+      '</div></div>';
+  }).join('');
+}
+
+function buildGenPrompt(top3,s) {
+  const sys=`당신은 5·18 민주화운동 기념사 전문 작성가입니다.\n코퍼스 기반 담론 분석 연구를 위해, 주어진 담론 조건에 맞는 기념사를 한국어로 창작합니다.\n\n[담론 분류 체계]\n문장 유형: THEME(담론 주제문) · CONTEXT(역사적 배경) · RITUAL(의례·형식 표현) · POLICY(정책 지향)\n주제(T1–T7): T1 사죄·반성 / T2 명예·배상 / T3 화해·통합 / T4 정의·진상규명 / T5 민주주의 가치 / T6 기억·계승 / T7 미래지향`;
+  const tsum=['T1','T2','T3','T4','T5','T6','T7'].reduce((a,t)=>a+(s[t]||0),0)||1;
+  const tline=['T1','T2','T3','T4','T5','T6','T7'].map(t=>t+' '+THEME_NAMES[t]+' '+Math.round((s[t]||0)/tsum*100)+'%').join(' · ');
+  const cond='[담론 조건]\n문장 구성: THEME '+s.theme_pct+'% · CONTEXT '+s.context_pct+'% · RITUAL '+s.ritual_pct+'% · POLICY '+s.policy_pct+'%\n'
+    +'THEME 내 주제: '+tline+'\n시제: 과거 '+s.past_pct+'% · 현재 '+s.present_pct+'% · 미래 '+s.future_pct+'%\n'
+    +'정책 지향(THEME 중): '+s.policy_theme_pct+'%\n목표 문장 수: 약 '+s.sentence_count+'문장';
+  const exs=top3.map((m,i)=>'[참조 연설 '+(i+1)+' — '+m.year+'년 '+m.president+' ('+m.regime+')]\n'+(m.text.length>2000?m.text.slice(0,2000)+'...':m.text)).join('\n\n');
+  const usr=cond+'\n\n'+exs+'\n\n위 참조 연설의 어휘·문체를 참고하되, 담론 조건에 맞는 새로운 5·18 민주화운동 기념사를 작성해주세요. 참조 연설을 복사하지 말고 창작하며, 자연스러운 흐름을 유지하세요.';
+  return {sys,usr};
+}
+
+async function generateSpeech() {
+  const key=(document.getElementById('gen-api-key').value||'').trim();
+  if(!key){alert('OpenAI API 키를 입력해주세요.');return;}
+  const s=getCurrentGenSliders();
+  const top3=[...genSpeechProfiles].map(p=>({...p,dist:genProfileDistance(p,s)}))
+    .sort((a,b)=>a.dist-b.dist).slice(0,3).filter(p=>p.text);
+  if(!top3.length){alert('매칭 가능한 연설이 없습니다.');return;}
+  const {sys,usr}=buildGenPrompt(top3,s);
+  const btn=document.getElementById('gen-btn'), st=document.getElementById('gen-status');
+  btn.disabled=true; btn.textContent='생성 중...'; st.textContent='GPT-4o에 요청 중...';
+  try {
+    const resp=await fetch('https://api.openai.com/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body:JSON.stringify({model:'gpt-4o',messages:[{role:'system',content:sys},{role:'user',content:usr}],temperature:0.85,max_tokens:3000})
+    });
+    if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(e.error?.message||'HTTP '+resp.status);}
+    const data=await resp.json();
+    const text=data.choices[0].message.content.trim();
+    document.getElementById('gen-result-card').style.display='';
+    document.getElementById('gen-result-text').textContent=text;
+    const u=data.usage;
+    st.textContent='생성 완료 · 입력 '+u.prompt_tokens+'토큰 · 출력 '+u.completion_tokens+'토큰';
+    document.getElementById('gen-key-status').textContent='연결됨';
+    document.getElementById('gen-key-status').style.color='#4ade80';
+    document.getElementById('gen-result-card').scrollIntoView({behavior:'smooth',block:'start'});
+  } catch(e) {
+    st.textContent='오류: '+e.message;
+    document.getElementById('gen-key-status').textContent='오류';
+    document.getElementById('gen-key-status').style.color='#f87171';
+  } finally { btn.disabled=false; btn.textContent='기념사 생성'; }
+}
+
+function copyGenResult() {
+  const text=document.getElementById('gen-result-text').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=event.currentTarget; btn.textContent='복사됨 ✓';
+    setTimeout(()=>{btn.textContent='복사';},1500);
+  });
+}
+
 // ====================== TAB NAVIGATION ======================
 function switchTab(id) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===id));
@@ -1122,6 +1482,7 @@ function switchTab(id) {
   if (id==='t5') renderDiscourseNetwork();
   if (id==='t6') renderTab4();
   if (id==='t7') { updateCat1Opts(); updateCat2Opts(); renderTab5(); }
+  if (id==='t8') initGenTab();
 }
 document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
 
