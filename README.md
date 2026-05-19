@@ -28,7 +28,7 @@ The corpus comprises all 32 presidential addresses delivered at the May 18 Gwang
 ## 리포지토리 구조 / Repository Structure
 
 ```
-may18-presidential-speeches/
+may18-official-speeches/
 │
 ├── data/
 │   ├── raw/                        # 원문 텍스트 / Raw speech texts
@@ -108,7 +108,7 @@ Coding was performed using an LLM-assisted pipeline guided by a researcher-defin
 
 ## 인용 / Citation
 
-> 정성윤. [발행연도]. "용서 없는 화해의 정치: 5·18 대통령 기념사의 담론 연쇄 구조와 정권별 분화." 『기억과 전망』 [권(호)]. [페이지]. https://github.com/orilan/may18-presidential-speeches
+> 정성윤. [발행연도]. "용서 없는 화해의 정치: 5·18 대통령 기념사의 담론 연쇄 구조와 정권별 분화." 『기억과 전망』 [권(호)]. [페이지]. https://github.com/orilan/may18-official-speeches
 
 ---
 
