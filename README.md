@@ -6,9 +6,7 @@
 
 ## 개요 / Overview
 
-이 리포지토리는 《기억과 전망》 55호 게재 확정 논문 "5·18 공식 기념 연설의 담론 구조 비교: 이행기정의 담론의 정권별 분화"의 분석에 사용된 코퍼스 데이터와 분석 결과 파일을 공개합니다.
-
-This repository provides the corpus data and analysis outputs accompanying the paper "Discourse Structure Comparison of Official May 18 Commemorative Addresses: Regime-Based Divergence in Transitional Justice Discourse," accepted for publication in *Memory and Vision* (기억과 전망), No. 55.
+[Peer Review 중 일시 블라인드]
 
 1997년부터 2025년까지 5·18 광주민주화운동 기념식에서 발화된 공식 기념연설 코퍼스(28편, 1,179문장)를 분석 대상으로 하며, 사죄(T1)·용서(T2)·화해(T3)·정의/진상규명(T4)·치유/회복(T5)·기억/계승(T6)·역사의식(T7)의 7개 주제 범주로 코딩하여, 한국 공식 기념 담론에서 사죄-용서-화해의 규범적 연쇄가 구조적으로 단절되어 있음을 실증합니다.
 
@@ -18,11 +16,7 @@ The corpus comprises 28 official commemorative addresses delivered at the May 18
 
 ## 논문 정보 / Paper Information
 
-- **국문 제목**: 5·18 공식 기념 연설의 담론 구조 비교: 이행기정의 담론의 정권별 분화
-- **영문 제목**: Discourse Structure Comparison of Official May 18 Commemorative Addresses: Regime-Based Divergence in Transitional Justice Discourse
-- **게재지**: 《기억과 전망》 55호 (Korea Democracy Foundation)
-- **게재 상태**: 게재 확정
-- **저자**: 정성윤 (전남대학교 5·18연구소) / Sungyoun Chung (The May 18 Institute, Chonnam National University)
+[Peer Review 중 일시 블라인드]
 
 ---
 
@@ -128,17 +122,7 @@ Coding was performed using an LLM-assisted pipeline guided by a researcher-defin
 
 ## 인용 / Citation
 
-**데이터셋 인용 / Dataset citation**
-
-> 정성윤 (2026). 5·18 공식 기념 연설 코퍼스 (1997–2025) [Data set]. GitHub. https://github.com/orilan/may18-official-speeches
-
-> Chung, Sungyoun (2026). Official May 18 Commemorative Address Corpus (1997–2025) [Data set]. GitHub. https://github.com/orilan/may18-official-speeches
-
-**논문 인용 / Paper citation**
-
-> 정성윤 (2026). 5·18 공식 기념 연설의 담론 구조 비교: 이행기정의 담론의 정권별 분화. 『기억과 전망』, 55.
-
-> Chung, Sungyoun (2026). Discourse Structure Comparison of Official May 18 Commemorative Addresses: Regime-Based Divergence in Transitional Justice Discourse. *Memory and Vision*, 55.
+[Peer Review 중 일시 블라인드]
 
 ---
 
@@ -156,4 +140,4 @@ Coding was performed using an LLM-assisted pipeline guided by a researcher-defin
 
 ## 문의 / Contact
 
-sungyounchung@gmail.com
+[Peer Review 중 일시 블라인드]
