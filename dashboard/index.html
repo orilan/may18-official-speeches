@@ -251,15 +251,15 @@ input[type=range].gsl:disabled { opacity:0.3; cursor:not-allowed; pointer-events
       <div class="chart-wrap"><canvas id="ch1-donut"></canvas></div>
     </div>
     <div class="card">
-      <div class="section-title">진보 vs 보수 비교 (THEME 비율 %)</div>
-      <div class="chart-wrap"><canvas id="ch1-libcon"></canvas></div>
+      <div class="section-title">연도별 문장 유형 구성 변화</div>
+      <div class="chart-wrap"><canvas id="ch1-yeartype"></canvas></div>
     </div>
   </div>
 
   <div class="grid-2 mb-20">
     <div class="card">
-      <div class="section-title">주제별 정권 쌍대 비교</div>
-      <div class="chart-wrap"><canvas id="ch1-paired"></canvas></div>
+      <div class="section-title">진보 vs 보수 비교 (THEME 비율 %)</div>
+      <div class="chart-wrap"><canvas id="ch1-libcon"></canvas></div>
     </div>
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">
@@ -1220,19 +1220,30 @@ function renderTab1() {
   });
 
   // Paired bar
-  makeChart('ch1-paired', {
-    type:'bar',
+  makeChart('ch1-yeartype', {
+    type: 'bar',
     data: {
-      labels: THEMES.map(t => t),
-      datasets: [
-        {label:'진보 %', data: THEMES.map(t => pct(lib.filter(s=>s.pt===t).length,lTotal)), backgroundColor: LIB_COLOR+'bb'},
-        {label:'보수 %', data: THEMES.map(t => pct(con.filter(s=>s.pt===t).length,cTotal)), backgroundColor: CON_COLOR+'bb'},
-      ]
+      labels: [...new Set(CORPUS.sentences.map(s => s.year))].sort(),
+      datasets: SENT_TYPES.map(tp => ({
+        label: tp,
+        data: [...new Set(CORPUS.sentences.map(s => s.year))].sort().map(y => {
+          const ySents = CORPUS.sentences.filter(s => s.year === y);
+          return ySents.length ? Math.round(ySents.filter(s => s.type === tp).length / ySents.length * 100) : 0;
+        }),
+        backgroundColor: TYPE_COLORS[tp] + 'cc',
+        stack: 'st'
+      }))
     },
     options: {
-      maintainAspectRatio:false,
-      plugins:{legend:{position:'top'}},
-      scales:{y:{ticks:{callback:v=>v+'%'}}}
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 }, color: '#e2e8f0' } },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y + '%' } }
+      },
+      scales: {
+        x: { stacked: true, ticks: { color: '#8892b0', font: { size: 9 }, maxRotation: 45, autoSkip: false }, grid: { color: 'rgba(255,255,255,0.06)' } },
+        y: { stacked: true, min: 0, max: 100, ticks: { color: '#8892b0', callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+      }
     }
   });
 
