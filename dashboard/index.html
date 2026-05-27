@@ -710,18 +710,18 @@ input[type=range].gsl:disabled { opacity:0.3; cursor:not-allowed; pointer-events
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
     <div class="card" style="display:flex;flex-direction:column">
       <div style="flex:1;min-height:0;display:flex;flex-direction:column">
-        <div class="section-title">연도별 주제 추이 <span style="font-size:11px;font-weight:400;opacity:.6">— ★ 2026 이재명 (참고)</span></div>
-        <div style="position:relative;flex:1;min-height:80px"><canvas id="ch9-timeline"></canvas></div>
-        <p class="shrink-note">★: 2026 이재명 (탐색적 참고) · 실선: 공식 28편</p>
+        <div class="section-title">연도별 주제 추이 <span style="font-size:11px;font-weight:400;opacity:.6">— 2026 이재명 (참고, 점선)</span></div>
+        <div style="position:relative;flex:1;min-height:160px"><canvas id="ch9-timeline"></canvas></div>
+        <p class="shrink-note">점선: 2026 이재명 (탐색적 참고) · 실선: 공식 28편</p>
       </div>
       <div style="flex:1;min-height:0;display:flex;flex-direction:column;margin-top:10px">
         <div class="section-title">3인 주제 프로파일 비교 <span style="font-size:11px;font-weight:400;opacity:.6">이재명 · 노무현(최유사) · 이명박(최상이)</span></div>
-        <div style="position:relative;flex:1;min-height:80px"><canvas id="ch9-compare3"></canvas></div>
+        <div style="position:relative;flex:1;min-height:160px"><canvas id="ch9-compare3"></canvas></div>
       </div>
     </div>
     <div class="card" style="display:flex;flex-direction:column">
       <div class="section-title">시제 분포 비교 <span style="font-size:11px;font-weight:400;opacity:.6">(THEME 문장 기준)</span></div>
-      <div style="position:relative;flex:1;min-height:120px"><canvas id="ch9-tense"></canvas></div>
+      <div style="position:relative;flex:1;min-height:240px"><canvas id="ch9-tense"></canvas></div>
     </div>
   </div>
 
@@ -2600,25 +2600,29 @@ function renderTab9() {
   const tc = document.getElementById('ch9-timeline');
   if (tc) {
     const histYears = TIMELINE.map(r => r.year);
-    const nullPad = histYears.map(() => null);
+    const allLabels = [...histYears, 2026];
+    const nHist = histYears.length;
+    // 각 테마: 역사 실선 + 2026 점선을 segment로 구분
     const histDatasets = THEMES.map(t => ({
       label: t + ' ' + THEME_NAMES[t],
-      data: TIMELINE.map(r => r[t + '_pct']),
-      borderColor: TH9[t] + 'aa', backgroundColor: 'transparent',
-      tension: 0.3, pointRadius: 2, fill: false, borderWidth: 1.5
-    }));
-    const star2026 = THEMES.map(t => ({
-      label: '★ ' + t + ' 2026',
-      data: [...nullPad, d.theme_pcts[t] || 0],
-      borderColor: TH9[t], backgroundColor: TH9[t],
-      pointRadius: [...histYears.map(() => 0), 9],
-      pointStyle: [...histYears.map(() => 'circle'), 'star'],
-      pointBorderColor: '#fff', pointBorderWidth: 1.5,
-      fill: false, showLine: false, borderWidth: 0
+      data: [...TIMELINE.map(r => r[t + '_pct']), d.theme_pcts[t] || 0],
+      borderColor: TH9[t] + 'cc',
+      backgroundColor: 'transparent',
+      tension: 0.3,
+      fill: false,
+      borderWidth: 1.5,
+      pointRadius: [...histYears.map(() => 2), 5],
+      pointBackgroundColor: [...histYears.map(() => TH9[t] + 'cc'), TH9[t]],
+      pointBorderColor: [...histYears.map(() => 'transparent'), '#fff'],
+      pointBorderWidth: [...histYears.map(() => 0), 1.5],
+      segment: {
+        borderDash: ctx => ctx.p1DataIndex === nHist ? [5, 4] : undefined,
+        borderColor: ctx => ctx.p1DataIndex === nHist ? TH9[t] : TH9[t] + 'cc'
+      }
     }));
     ch9Timeline = new Chart(tc.getContext('2d'), {
       type: 'line',
-      data: { labels: [...histYears, 2026], datasets: [...histDatasets, ...star2026] },
+      data: { labels: allLabels, datasets: histDatasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -2627,10 +2631,7 @@ function renderTab9() {
           y: { ticks: { color: '#94a3b8', font: { size: 10 }, callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.05)' } }
         },
         plugins: {
-          legend: {
-            labels: { color: '#e2e8f0', font: { size: 9 }, boxWidth: 14,
-              filter: item => !item.text.startsWith('★') }
-          }
+          legend: { labels: { color: '#e2e8f0', font: { size: 9 }, boxWidth: 14 } }
         }
       }
     });
